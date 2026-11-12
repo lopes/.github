@@ -13,6 +13,7 @@ body:
       options:
         - "Gitleaks Secret Scanning (.gitleaks.toml, security.yml)"
         - "Opengrep SAST Scanning (security.yml)"
+        - "Zizmor GitHub Actions Scanning (.zizmor.yml, security.yml)"
         - "Trivy Vulnerability & IaC Scanning (security.yml)"
         - "Community Health Defaults (SECURITY.md)"
     validations:
