@@ -6,12 +6,12 @@
 
 ## Type of Change
 - [ ] Reusable Security Workflow (`.github/workflows/security.yml`)
-- [ ] Canonical Gitleaks Ruleset (`.gitleaks.toml`)
+- [ ] Canonical Scanner Baselines (`.gitleaks.toml`, `.zizmor.yml`)
 - [ ] Account-Wide Security Policy (`SECURITY.md`)
 - [ ] Documentation & Governance (`README.md`, `.github/`)
 
 ## Quality Checklist
-- [ ] Reusable workflow (`security.yml`) passes on this PR (`gitleaks`, `opengrep`, `trivy`).
+- [ ] Reusable workflow (`security.yml`) passes on this PR (`gitleaks`, `opengrep`, `zizmor`, `trivy`).
 - [ ] Scanner versions and action tags are explicitly pinned.
 - [ ] Downstream impact across caller repositories (`lopes/*`) reviewed.
 - [ ] Commit follows [Scoped Commits](https://scopedcommits.com/) convention (`<scope>: <description>`).

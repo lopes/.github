@@ -1,9 +1,11 @@
 # Global default code owners
 * @lopes
 
-# Reusable Security Workflows & Gitleaks Baseline
+# Reusable Security Workflows & Scanner Baselines
 /.github/workflows/ @lopes
+/.github/dependabot.yml @lopes
 /.gitleaks.toml @lopes
+/.zizmor.yml @lopes
 
 # Account-Wide Security Policy & Documentation
 /SECURITY.md @lopes

@@ -13,7 +13,7 @@ body:
     id: context
     attributes:
       label: Context
-      description: "Security rationale, false-positive analysis, execution time impact across caller repositories, and affected files (`.gitleaks.toml`, `security.yml`)."
+      description: "Security rationale, false-positive analysis, execution time impact across caller repositories, and affected files (`.gitleaks.toml`, `.zizmor.yml`, `security.yml`)."
     validations:
       required: true
   - type: textarea
