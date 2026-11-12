@@ -9,6 +9,16 @@ on:
         required: false
         type: string
         default: "8.30.1"
+      opengrep_version:
+        description: "Pinned opengrep release version"
+        required: false
+        type: string
+        default: "1.33.1"
+      zizmor_version:
+        description: "Pinned zizmor release version"
+        required: false
+        type: string
+        default: "1.32.0"
       trivy_severity:
         description: "Trivy severity threshold for failing builds"
         required: false
@@ -22,7 +32,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 concurrency:
   group: security-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
@@ -78,10 +87,12 @@ jobs:
           fetch-depth: 1
           path: repo
 
-      - name: Install opengrep static binary
+      - name: Install pinned opengrep static binary
+        env:
+          OPENGREP_VERSION: ${{ inputs.opengrep_version || '1.33.1' }}
         run: |
           set -euo pipefail
-          curl -fsSL "https://github.com/opengrep/opengrep/releases/latest/download/opengrep_manylinux_x86" -o /usr/local/bin/opengrep
+          curl -fsSL "https://github.com/opengrep/opengrep/releases/download/v${OPENGREP_VERSION}/opengrep_manylinux_x86" -o /usr/local/bin/opengrep
           chmod +x /usr/local/bin/opengrep
           opengrep --version
 
@@ -118,6 +129,50 @@ jobs:
             --exclude="target" \
             --exclude="__pycache__" \
             .
+
+  zizmor:
+    name: GitHub Actions Security (zizmor)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          path: repo
+
+      - name: Checkout shared security baseline
+        uses: actions/checkout@v7
+        with:
+          repository: lopes/.github
+          path: baseline
+
+      - name: Install pinned zizmor
+        env:
+          ZIZMOR_VERSION: ${{ inputs.zizmor_version || '1.32.0' }}
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/zizmorcore/zizmor/releases/download/v${ZIZMOR_VERSION}/zizmor-x86_64-unknown-linux-gnu.tar.gz" -o /tmp/zizmor.tar.gz
+          tar -xzf /tmp/zizmor.tar.gz -C /usr/local/bin zizmor
+          chmod +x /usr/local/bin/zizmor
+          zizmor --version
+
+      - name: Audit GitHub Actions workflows
+        run: |
+          set -euo pipefail
+          if [ ! -d repo/.github/workflows ]; then
+            echo "No .github/workflows directory found; skipping zizmor."
+            exit 0
+          fi
+          if [ -f repo/.zizmor.yml ]; then
+            CONFIG_PATH="repo/.zizmor.yml"
+          elif [ -f repo/zizmor.yml ]; then
+            CONFIG_PATH="repo/zizmor.yml"
+          else
+            CONFIG_PATH="baseline/.zizmor.yml"
+          fi
+          echo "Using zizmor config: ${CONFIG_PATH}"
+          zizmor --no-online-audits --config "${CONFIG_PATH}" --min-severity medium repo
 
   trivy:
     name: IaC & Supply Chain (trivy)
